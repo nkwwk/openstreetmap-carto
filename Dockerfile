@@ -6,8 +6,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Style dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
     ca-certificates gnupg postgresql-client curl unzip python3 \
-    python-is-python3 python3-pip nodejs npm git fonts-unifont mapnik-utils \
-    build-essential \
+    python-is-python3 python3-pip python3-venv pipx nodejs npm git \
+    fonts-unifont mapnik-utils build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Kosmtik with plugins, forcing prefix to /usr because Ubuntu sets
@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 RUN npm set prefix /usr && npm install -g --unsafe-perm "git+https://git@github.com/kosmtik/kosmtik.git#5dbde8db6b5e22073951066b0646a91c10bb81a5"
 
 WORKDIR /usr/lib/node_modules/kosmtik/
-RUN pip3 install --no-cache-dir mbutil \
+RUN pipx install mbutil \
     && kosmtik plugins --install kosmtik-overpass-layer \
                     --install kosmtik-fetch-remote \
                     --install kosmtik-overlay \

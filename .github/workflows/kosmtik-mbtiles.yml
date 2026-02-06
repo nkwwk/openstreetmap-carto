@@ -70,7 +70,7 @@ jobs:
               --output /openstreetmap-carto/artifacts/tiles \
               --minZoom 0 \
               --maxZoom 2
-            mb-util /openstreetmap-carto/artifacts/tiles \
+            /root/.local/bin/mb-util /openstreetmap-carto/artifacts/tiles \
               /openstreetmap-carto/artifacts/openstreetmap-carto.mbtiles
           '
 
