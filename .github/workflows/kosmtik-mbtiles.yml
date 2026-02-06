@@ -65,6 +65,7 @@ jobs:
           docker compose run --rm --user root kosmtik sh -c '
             cp /tmp/.kosmtik-config.yml .kosmtik-config.yml
             export KOSMTIK_CONFIGPATH=.kosmtik-config.yml
+            node /usr/lib/node_modules/kosmtik/index.js plugins --install kosmtik-mbtiles-export
             node /usr/lib/node_modules/kosmtik/index.js export project.mml \
               --format mbtiles \
               --output /openstreetmap-carto/artifacts/openstreetmap-carto.mbtiles \
