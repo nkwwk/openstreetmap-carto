@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       geofabrik_extract:
-        description: Geofabrik extract id (e.g. europe/monaco)
+        description: Geofabrik extract id (e.g. hong-kong)
         required: true
-        default: europe/monaco
+        default: hong-kong
         type: string
 
 jobs:
