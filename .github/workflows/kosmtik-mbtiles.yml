@@ -66,12 +66,10 @@ jobs:
             cp /tmp/.kosmtik-config.yml .kosmtik-config.yml
             export KOSMTIK_CONFIGPATH=.kosmtik-config.yml
             node /usr/lib/node_modules/kosmtik/index.js export project.mml \
-              --format tiles \
-              --output /openstreetmap-carto/artifacts/tiles \
+              --format mbtiles \
+              --output /openstreetmap-carto/artifacts/openstreetmap-carto.mbtiles \
               --minZoom 0 \
               --maxZoom 2
-            /root/.local/bin/mb-util /openstreetmap-carto/artifacts/tiles \
-              /openstreetmap-carto/artifacts/openstreetmap-carto.mbtiles
           '
 
       - name: Upload MBTiles
