@@ -5,6 +5,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Style dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
+    software-properties-common \
+    && add-apt-repository -y universe \
+    && apt-get update && apt-get install --no-install-recommends -y \
     ca-certificates gnupg postgresql-client curl unzip python3 \
     python-is-python3 python3-pip python3-venv git \
     fonts-unifont mapnik-utils build-essential \
