@@ -1,4 +1,4 @@
-FROM ubuntu:noble
+FROM ubuntu:jammy
 
 # https://serverfault.com/questions/949991/how-to-install-tzdata-on-a-ubuntu-docker-image
 ARG DEBIAN_FRONTEND=noninteractive
