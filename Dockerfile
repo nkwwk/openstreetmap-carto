@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Style dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
     ca-certificates gnupg postgresql-client curl unzip python3 \
-    nodejs npm git fonts-unifont mapnik-utils \
+    nodejs npm git fonts-unifont mapnik-utils build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Kosmtik with plugins, forcing prefix to /usr because Ubuntu sets
@@ -24,6 +24,7 @@ RUN kosmtik plugins --install kosmtik-overpass-layer \
                     --install kosmtik-osm-data-overlay \
                     --install kosmtik-mapnik-reference \
                     --install kosmtik-geojson-overlay \
+                    --install kosmtik-mbtiles-export \
     && cp /root/.config/kosmtik.yml /tmp/.kosmtik-config.yml
 
 # Closing section
