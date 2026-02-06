@@ -1,0 +1,47 @@
+name: Render Raster MBTiles with Kosmtik
+
+on:
+  workflow_dispatch:
+
+jobs:
+  render-mbtiles:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download OSM extract
+        run: curl -L -o data.osm.pbf https://download.geofabrik.de/europe/monaco-latest.osm.pbf
+
+      - name: Build containers
+        run: docker compose build db import kosmtik
+
+      - name: Start database
+        run: docker compose up -d db
+
+      - name: Import data
+        run: docker compose run --rm --user root import
+
+      - name: Render MBTiles
+        run: |
+          mkdir -p artifacts
+          docker compose run --rm --user root kosmtik sh -c '
+            cp /tmp/.kosmtik-config.yml .kosmtik-config.yml
+            export KOSMTIK_CONFIGPATH=.kosmtik-config.yml
+            kosmtik plugins --install kosmtik-mbtiles-export
+            node /usr/lib/node_modules/kosmtik/index.js export project.mml \
+              --format mbtiles \
+              --output /openstreetmap-carto/artifacts/openstreetmap-carto.mbtiles \
+              --minZoom 0 \
+              --maxZoom 2
+          '
+
+      - name: Upload MBTiles
+        uses: actions/upload-artifact@v4
+        with:
+          name: openstreetmap-carto-mbtiles
+          path: artifacts/*.mbtiles
+          if-no-files-found: error
+
+      - name: Cleanup containers
+        if: always()
+        run: docker compose down -v
