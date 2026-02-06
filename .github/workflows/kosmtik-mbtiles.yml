@@ -2,6 +2,12 @@ name: Render Raster MBTiles with Kosmtik
 
 on:
   workflow_dispatch:
+    inputs:
+      geofabrik_extract:
+        description: Geofabrik extract id (e.g. europe/monaco)
+        required: true
+        default: europe/monaco
+        type: string
 
 jobs:
   render-mbtiles:
@@ -9,8 +15,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Resolve Geofabrik extract URL
+        id: resolve_extract
+        env:
+          GEOFABRIK_EXTRACT: ${{ inputs.geofabrik_extract }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.request
+
+          extract_id = os.environ["GEOFABRIK_EXTRACT"].strip()
+          index_url = "https://download.geofabrik.de/index-v1.json"
+          with urllib.request.urlopen(index_url) as response:
+              index = json.load(response)
+
+          match = next(
+              (feature for feature in index.get("features", [])
+               if feature.get("properties", {}).get("id") == extract_id),
+              None,
+          )
+          if not match:
+              print(f"Extract id not found: {extract_id}", file=sys.stderr)
+              sys.exit(1)
+
+          pbf_url = match["properties"]["urls"]["pbf"]
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"pbf_url={pbf_url}\n")
+          print(f"Using extract: {extract_id}")
+          print(f"PBF URL: {pbf_url}")
+          PY
+
       - name: Download OSM extract
-        run: curl -L -o data.osm.pbf https://download.geofabrik.de/europe/monaco-latest.osm.pbf
+        run: curl -L -o data.osm.pbf "${{ steps.resolve_extract.outputs.pbf_url }}"
 
       - name: Build containers
         run: docker compose build db import kosmtik
